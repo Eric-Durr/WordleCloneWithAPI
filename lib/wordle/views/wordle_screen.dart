@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:wordle_clone/app/app_colors.dart';
+import 'package:wordle_clone/wordle/utils/api_constants.dart';
 import 'package:wordle_clone/wordle/wordle.dart';
 
 enum GameStatus { playing, submitting, lost, won }
@@ -29,9 +30,14 @@ class _WordleScreenState extends State<WordleScreen> {
       _current_word_index < _board.length ? _board[_current_word_index] : null;
 
   // ignore: prefer_final_fields
-  Word _solution = Word.fromString(
-    fiveLetterWords[Random().nextInt(fiveLetterWords.length)].toUpperCase(),
-  );
+  Word _solution = Word.fromString('WORDS');
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getWord();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,10 +172,18 @@ class _WordleScreenState extends State<WordleScreen> {
         ..clear()
         ..addAll(List.generate(
             6, (_) => Word(letters: List.generate(5, (_) => Letter.empty()))));
-      _solution = Word.fromString(
-          fiveLetterWords[Random().nextInt(fiveLetterWords.length)]
-              .toUpperCase());
+      _getWord();
       _keyboard_letters.clear();
+    });
+  }
+
+  _getWord() {
+    fetchRandomFiveLetterWord().then((String value) {
+      if (mounted) {
+        setState(() {
+          _solution = Word.fromString(value.toUpperCase());
+        });
+      }
     });
   }
 }
